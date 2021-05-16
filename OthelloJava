@@ -14,7 +14,7 @@ public class OthelloGame {
         System.out.println(" ");
         System.out.println(" ");
         for(int column = 0; column < size;column++){
-            System.out.println(column + 1 + " ");
+            System.out.println(column + 0 + " ");
         }
         System.out.println(" ");
 
@@ -24,7 +24,7 @@ public class OthelloGame {
                 System.out.println("-----");
             }
             System.out.println(" ");
-            System.out.println(row + 1 + " ");
+            System.out.println(row + 0 + " ");
 
             for(int column = 0; column < size; column++){
                 System.out.println("| ");
@@ -44,6 +44,11 @@ public class OthelloGame {
         }
         System.out.println(" ");
         System.out.println(" ");
+
+        this.othelloBoard[(size/2) -1][(size/2) -1] = "b ";
+        this.othelloBoard[(size/2) -1][size/2] = "w ";
+        this.othelloBoard[size/2][(size/2) -1] = "w ";
+        this.othelloBoard[size/2][size/2] = "b ";
 
     }
 
@@ -401,5 +406,13 @@ public class OthelloGame {
         else{
             gameOver();
         }
+    }
+    
+    public static void main(String[] args) {
+
+        OthelloGame juego1 = new OthelloGame();
+
+        juego1.displayBoard();
+        juego1.Player1();
     }
 }
