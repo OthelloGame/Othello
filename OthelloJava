@@ -1,12 +1,9 @@
 
-package CapaInterfaz;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -35,8 +32,9 @@ public class OthelloGUI extends JPanel implements MouseListener {
     static int newPosition = 0;
     static int noNewPosition = 0;
 
-    static boolean noOneWin = false;
+    static boolean gameOver= false;
 
+    //eduardo
     //GUI
     public OthelloGUI() {
         // Window Properties
@@ -81,7 +79,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-
+                //diseño de las casillas
                 g.setColor(new Color(186, 141, 60));
                 g.fillRect(0,  0, 60, 60);
                 g.fillRect(60,  60, 60, 60);
@@ -117,6 +115,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
                 g.fillRect(0,  360, 60, 60);
                 g.fillRect(60,  420, 60, 60);
 
+                //diseño de las casillas
                 g.setColor(new Color(134, 103, 45));
                 g.fillRect(60,  0, 60, 60);
                 g.fillRect(120,  60, 60, 60);
@@ -151,6 +150,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
                 g.fillRect(120,  420, 60, 60);
                 g.fillRect(0,  420, 60, 60);
 
+                //lineas blancas entre casillas
                 for(int row = 0; row < boardSize; row++){
                     for(int column = 0; column < boardSize; column++){
                         g.setColor(Color.white);
@@ -158,6 +158,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
                     }
                 }
 
+                //diseño de las fichas blancas
                 for (int row = 0; row < othelloBoard.length; row++) {
                     for (int column = 0; column < othelloBoard[row].length; column++) {
                         switch (othelloBoard[row][column]) {
@@ -176,12 +177,13 @@ public class OthelloGUI extends JPanel implements MouseListener {
                     }
                 }
 
+                //diseño de las fichas negras
                 g.setColor(Color.BLACK);
                 g.setFont(new Font("Times New Roman", Font.ITALIC, 25));
                 if (frei == 0) {
                     if (blackScore > whiteScore) {
                         g.drawString("Jugador 1 gano!      Fichas ganadas: " + blackScore, 0, 500);
-                    } else if (blackScore == whiteScore || noOneWin) {
+                    } else if (blackScore == whiteScore || gameOver) {
                         g.drawString("Empate", 250, 500);
                     } else {
                         g.drawString("Jugador 2 gano!   Fichas ganadas: " + whiteScore, 0, 500);
@@ -196,6 +198,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
                 }
             }
 
+            //tamaño del programa
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(481, 505);
@@ -214,6 +217,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
         frame.setVisible(true);
     }
 
+    //eduardo
     //funcion principal
     public static void main(String[] args) {
         start();
@@ -224,7 +228,8 @@ public class OthelloGUI extends JPanel implements MouseListener {
             }
         });
     }
-
+    
+    //eduardo
     //es el estado en el que se inicializa el juego
     static void start() {
         othelloBoard[(boardSize / 2) - 1][(boardSize / 2) - 1] = 1;
@@ -235,6 +240,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
         count();
     }
 
+    //roberto
     boolean freePosition(int row, int column) {
         if (row < boardSize && column < boardSize) {
             if (othelloBoard[row][column] == -1) {
@@ -244,6 +250,8 @@ public class OthelloGUI extends JPanel implements MouseListener {
         return false;
     }
 
+
+    //alonso
     //coloca las fichas
     static void putToken() {
         int row = 0, column = 0;
@@ -274,9 +282,9 @@ public class OthelloGUI extends JPanel implements MouseListener {
                 playerTurn = 1;
             }
             if (noNewPosition > 1) {
-                noOneWin = true;
+                gameOver = true;
             }
-            if (!noOneWin) {
+            if (!gameOver) {
                 putToken();
             }
         } else {
@@ -285,6 +293,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
 
     }
 
+    //alonso
     //revisa si la casilla puede ser seleccionada
     static void checkPositon(int row, int column) {
         int notTurn;
@@ -479,6 +488,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
 
     }
 
+    //roberto
     //voltea el valor de las fichas
     static void flipTokens(int row, int column) {
         int notTurn;
@@ -712,6 +722,7 @@ public class OthelloGUI extends JPanel implements MouseListener {
         done = false;
     }
 
+    //roberto
     //contador del marcador de cada jugador
     static void count() {
         int row = 0, column = 0;
