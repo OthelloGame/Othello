@@ -1,418 +1,788 @@
 
-import java.util.Scanner;
+package CapaInterfaz;
 
-public class OthelloGame {
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-    private static int size  = 8;
-    private static String player1 = "b";
-    private static String player2 = "w";
-    private String othelloBoard[][];
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
-    public void displayBoard(){
-        this.othelloBoard = new String[size][size];
+public class OthelloGUI extends JPanel implements MouseListener {
 
-        System.out.println(" ");
-        System.out.println(" ");
-        for(int column = 0; column < size;column++){
-            System.out.println(column + 0 + " ");
-        }
-        System.out.println(" ");
+    //tablero
+    static int[][] othelloBoard = new int[8][8];
+    static int boardSize = 8;
+    static JPanel jpanel = new JPanel();
 
-        for(int row = 0; row < size; row++){
-            System.out.println(" ");
-            for(int column = 0; column < size; column++){
-                System.out.println("-----");
+    //playerTurn = 1 (turno del jugardor blanco)
+    //playerTurn = 2 (turno del jugador negro)
+    static int playerTurn = 2;
+
+    //puntuacion/fichas en poder que tiene cada jugador
+    static int blackScore = 0;
+    static int whiteScore = 0;
+
+    static int frei = 0;
+
+    static int newPosition = 0;
+    static int noNewPosition = 0;
+
+    static boolean noOneWin = false;
+
+    //GUI
+    public OthelloGUI() {
+        // Window Properties
+        JFrame frame = new JFrame();
+        frame.setTitle("Othello");
+        frame.setLocation(450, 150);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //evita que el usuario pueda cambiar el tamaño de la venta del programa
+        frame.setResizable(false);
+
+        // Menu de Opciones
+        JMenuBar menu = new JMenuBar();
+        JMenu Options = new JMenu("Opciones");
+        JMenuItem newGame = new JMenuItem("Reiniciar juego");
+        JMenuItem exit = new JMenuItem("Cerrar Juego");
+        menu.add(Options);
+        Options.add(newGame);
+        Options.addSeparator();
+        Options.add(exit);
+
+        //inicia un nuevo juego
+        newGame.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                othelloBoard = new int[boardSize][boardSize];
+                playerTurn = 2;
+                start();
+                count();
+                jpanel.repaint();
             }
-            System.out.println(" ");
-            System.out.println(row + 0 + " ");
 
-            for(int column = 0; column < size; column++){
-                System.out.println("| ");
-                if(this.othelloBoard[row][column] == " "){
-                    System.out.println(" ");
-                }
-                else{
-                    System.out.println(this.othelloBoard[row][column]);
-                }
-                System.out.println("|");
+        });
+
+        //indica la salida del programa
+        exit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
             }
-        }
+        });
 
-        System.out.println(" ");
-        for (int column = 0; column < size;column++){
-            System.out.println("-----");
-        }
-        System.out.println(" ");
-        System.out.println(" ");
+        jpanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
 
-        this.othelloBoard[(size/2) -1][(size/2) -1] = "b ";
-        this.othelloBoard[(size/2) -1][size/2] = "w ";
-        this.othelloBoard[size/2][(size/2) -1] = "w ";
-        this.othelloBoard[size/2][size/2] = "b ";
+                g.setColor(new Color(186, 141, 60));
+                g.fillRect(0,  0, 60, 60);
+                g.fillRect(60,  60, 60, 60);
+                g.fillRect(120,  120, 60, 60);
+                g.fillRect(180,  180, 60, 60);
+                g.fillRect(240,  240, 60, 60);
+                g.fillRect(300,  300, 60, 60);
+                g.fillRect(360,  360, 60, 60);
+                g.fillRect(420,  420, 60, 60);
+                g.fillRect(120,  0, 60, 60);
+                g.fillRect(180,  60, 60, 60);
+                g.fillRect(240,  120, 60, 60);
+                g.fillRect(300,  180, 60, 60);
+                g.fillRect(360,  240, 60, 60);
+                g.fillRect(420,  300, 60, 60);
+                g.fillRect(240,  0, 60, 60);
+                g.fillRect(300,  60, 60, 60);
+                g.fillRect(240,  120, 60, 60);
+                g.fillRect(360,  120, 60, 60);
+                g.fillRect(420,  180, 60, 60);
+                g.fillRect(360,  0, 60, 60);
+                g.fillRect(420,  60, 60, 60);
+                g.fillRect(0,  120, 60, 60);
+                g.fillRect(60,  180, 60, 60);
+                g.fillRect(120,  240, 60, 60);
+                g.fillRect(180,  300, 60, 60);
+                g.fillRect(240,  360, 60, 60);
+                g.fillRect(300,  420, 60, 60);
+                g.fillRect(0,  240, 60, 60);
+                g.fillRect(60,  300, 60, 60);
+                g.fillRect(120, 360, 60, 60);
+                g.fillRect(180,  420, 60, 60);
+                g.fillRect(0,  360, 60, 60);
+                g.fillRect(60,  420, 60, 60);
 
-    }
+                g.setColor(new Color(134, 103, 45));
+                g.fillRect(60,  0, 60, 60);
+                g.fillRect(120,  60, 60, 60);
+                g.fillRect(180,  120, 60, 60);
+                g.fillRect(240,  180, 60, 60);
+                g.fillRect(300,  240, 60, 60);
+                g.fillRect(360,  300, 60, 60);
+                g.fillRect(420,  360, 60, 60);
+                g.fillRect(180,  0, 60, 60);
+                g.fillRect(240,  60, 60, 60);
+                g.fillRect(300,  120, 60, 60);
+                g.fillRect(360,  180, 60, 60);
+                g.fillRect(420,  240, 60, 60);
+                g.fillRect(300,  0, 60, 60);
+                g.fillRect(360,  60, 60, 60);
+                g.fillRect(420,  120, 60, 60);
+                g.fillRect(420,  0, 60, 60);
+                g.fillRect(0,  60, 60, 60);
+                g.fillRect(60,  120, 60, 60);
+                g.fillRect(120,  180, 60, 60);
+                g.fillRect(180,  240, 60, 60);
+                g.fillRect(240,  300, 60, 60);
+                g.fillRect(300,  360, 60, 60);
+                g.fillRect(360,  420, 60, 60);
+                g.fillRect(0,  180, 60, 60);
+                g.fillRect(60,  240, 60, 60);
+                g.fillRect(120,  300, 60, 60);
+                g.fillRect(180,  360, 60, 60);
+                g.fillRect(240,  420, 60, 60);
+                g.fillRect(0,  300, 60, 60);
+                g.fillRect(60,  360, 60, 60);
+                g.fillRect(120,  420, 60, 60);
+                g.fillRect(0,  420, 60, 60);
 
-    public int putToken(int row, int column, String token){
-        int tokenWon = 0;
-
-        if(this.othelloBoard[row][column] != " "){
-            return 0;
-        }
-        this.othelloBoard[row][column] = token;
-
-        String opponentToken;
-
-        if(token == player1){
-            opponentToken = player2;
-        }
-        else{
-            opponentToken = player2;
-        }
-
-        int tokenPosition = -1;
-        for(int i = column + 1; i < size && this.othelloBoard[row][i] != " " && tokenPosition == -1; i++){
-            if(this.othelloBoard[row][i] == token){
-                tokenPosition = i;
-            }
-        }
-        if(tokenPosition != -1 && tokenPosition > column + 1){
-            for(int c = column +1; c < tokenPosition; c++){
-                this.othelloBoard[row][c] = token;
-                tokenWon++;
-            }
-        }
-
-        tokenPosition = -1;
-        for(int c = column -1; c >= 0 && this.othelloBoard[row][c] != " " && tokenPosition == 1; c--){
-            if(this.othelloBoard[row][c] == token){
-                tokenPosition = c;
-            }
-        }
-        if(tokenPosition != -1 && tokenPosition < column -1){
-            for(int c = column -1; c > tokenPosition; c--){
-                this.othelloBoard[row][column] = token;
-                tokenWon++;
-            }
-        }
-
-        tokenPosition = -1;
-        for(int r = row -1; r >= 0 && this.othelloBoard[r][column] != " " && tokenPosition == -1; r-- ){
-            if(this.othelloBoard[r][column] == token){
-                tokenPosition = r;
-            }
-        }
-        if(tokenPosition != -1 && tokenPosition < row -1){
-            for(int r = row -1; r > tokenPosition; r--){
-            this.othelloBoard[r][column] = token;
-            tokenWon++;
-            }
-        }
-
-        tokenPosition = -1;
-        for(int r = row + 1; r < size && this.othelloBoard[r][column] != " " && tokenPosition == -1; r++){
-            if(this.othelloBoard[r][column] == token){
-                tokenPosition = r;
-            }
-        }
-        if(tokenPosition != -1 && tokenPosition > row +1){
-            for(int r = row + 1; r < tokenPosition; r++){
-                this.othelloBoard[r][column] = token;
-                tokenWon++;
-            }
-        }
-
-        tokenPosition = -1;
-        int c = column -1;
-        for(int r = row -1; c >= 0 && r >= 0 && this.othelloBoard[r][c] != " " && tokenPosition == -1; r--){
-            if(this.othelloBoard[r][c] == token){
-                tokenPosition = r;
-
-            }
-            c--;
-        }
-        if(tokenPosition != -1 && tokenPosition < row -1){
-            c = column -1;
-            for(int r = row -1; r >tokenPosition; r--){
-                this.othelloBoard[r][c] = token;
-                tokenWon++;
-                c--;
-            }
-        }
-
-        tokenPosition = -1;
-        c = column + 1;
-        for(int r = row -1; c < size && r >= 0 && this.othelloBoard[r][c] != " " && tokenWon == -1; r--){
-            if(this.othelloBoard[r][c] == token){
-                tokenPosition = r;
-            }
-            c++;
-        }
-        if(tokenPosition != -1 && tokenPosition < row -1){
-            c = column + 1;
-            for (int r = row - 1; r > tokenPosition; r--){
-                this.othelloBoard[r][c] = token;
-                tokenWon++;
-                c++;
-            }
-        }
-
-        tokenPosition = -1;
-        c = column -1;
-        for(int r = row +1; c >= 0 && r < size && this.othelloBoard[r][c] != " " &&tokenPosition == -1; r++){
-            if(this.othelloBoard[r][c] == token){
-                tokenPosition = r;
-            }
-            c--;
-        }
-        if(tokenPosition != -1 && tokenPosition > row + 1){
-            c = column - 1;
-            for(int r = row + 1; r < tokenPosition; r++){
-                this.othelloBoard[r][c] = token;
-                tokenWon++;
-                c++;
-            }
-        }
-
-        tokenPosition = -1;
-        c = column + 1;
-        for(int r = row + 1; c < size && this.othelloBoard[r][c] != " " && tokenPosition == -1; r++){
-            if(this.othelloBoard[r][c] == token){
-                tokenPosition = r;
-            }
-            c++;
-        }
-        if(tokenPosition != -1 && tokenPosition > row + 1){
-            c = column + 1;
-            for(int r = row + 1; r < tokenPosition; r++){
-                this.othelloBoard[r][c] = token;
-                tokenWon++;
-                c++;
-            }
-        }
-
-        if(tokenWon == 0){
-            this.othelloBoard[row][column] = " ";
-        }
-        return tokenWon;
-    }
-
-    public boolean canMove(){
-        int countBlackTokens = 0;
-        int countWhiteTokens = 0;
-
-        for(int row = 0; row < size; row++){
-            for(int column = 0; column < size; column++){
-                if(this.othelloBoard[row][column] == "b "){
-                    countBlackTokens++;
-                }
-                if(this.othelloBoard[row][column] == "w "){
-                    countWhiteTokens++;
-                }
-            }
-        }
-        if(countBlackTokens == 0 || countWhiteTokens == 0){
-            return false;
-        }
-        if((countBlackTokens + countWhiteTokens) == 16){
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean gameOver(){
-        System.out.println("Eljuego termino");
-        int counBlackTokens = 0;
-        int coutnWhiteTokens = 0;
-
-        for(int row = 0; row < size; row++){
-            for(int column = 0; column < size; column++){
-                if(this.othelloBoard[row][column] == "b "){
-                    counBlackTokens++;
-                }
-                if(this.othelloBoard[row][column] == "w "){
-                    coutnWhiteTokens++;
-                }
-            }
-        }
-
-        if(counBlackTokens > coutnWhiteTokens){
-            System.out.println("El jugador 1 gano! ");
-            System.out.println(" ");
-        }
-        else if(coutnWhiteTokens > counBlackTokens){
-            System.out.println("El jugador 2 gano! ");
-            System.out.println(" ");
-        }
-        else{
-            System.out.println("Empate! ");
-            System.out.println(" ");
-        }
-
-        return true;
-    }
-
-    public void Player1(){
-        int row, column;
-        boolean cantMove;
-
-        System.out.println("Tu turno jugador " + player1);
-        System.out.println(" ");
-
-        do{
-            Scanner sc = new Scanner(System.in);
-            cantMove = false;
-            System.out.println("Pong el numero de fila en la que quiere mover la ficha: ");
-            row = sc.nextInt();
-            while(row < 0 || row >= size){
-                try {
-                    if(row < 0 || row >= size){
-                        throw new NotValidPosition();
+                for(int row = 0; row < boardSize; row++){
+                    for(int column = 0; column < boardSize; column++){
+                        g.setColor(Color.white);
+                        g.drawRect(row * 60,  column * 60, 60, 60);
                     }
                 }
-                catch (NotValidPosition NTP){
-                    System.out.println(NTP);
-                    System.out.println("Ponge el numero de fila en la que quiere mover la ficha: ");
-                    row = sc.nextInt();
-                }
-            }
-            System.out.println("ponga el numero de la columna en la que quiere mover la ficha: ");
-            column = sc.nextInt();
-            while(column < 0 || column >= size){
-                try {
-                    if(column < 0 || column >= size){
-                        throw new NotValidPosition();
+
+                for (int row = 0; row < othelloBoard.length; row++) {
+                    for (int column = 0; column < othelloBoard[row].length; column++) {
+                        switch (othelloBoard[row][column]) {
+                            case 0:
+                                break;
+
+                            case 1:
+                                g.setColor(Color.WHITE);
+                                g.fillOval(5 + row * 60, 5 + column * 60, 50, 50);
+                                break;
+                            case 2:
+                                g.setColor(Color.BLACK);
+                                g.fillOval(5 + row * 60, 5 + column * 60, 50, 50);
+                                break;
+                        }
                     }
                 }
-                catch (NotValidPosition NTP){
-                    System.out.println(NTP);
-                    System.out.println("Ponge el numero de la columna en la que quiere mover la ficha: ");
-                    column = sc.nextInt();
-                }
-            }
 
-            if(this.othelloBoard[row][column] != " "){
-                System.out.println(" ");
-                System.out.println("Seleccione una fila o column a vacia para mover una ficha");
-                System.out.println(" ");
-                cantMove = true;
-            }
-            else {
-                int tokensWon = putToken(row, column, player1);
-                if (tokensWon == 0) {
-                    System.out.println(" ");
-                    System.out.println("Moviemiento invalido");
-                    System.out.println(" ");
-
-                    cantMove = true;
-                } else if (tokensWon == 1) {
-                    System.out.println(" ");
-                    System.out.println("Una ficha ganada");
-                    System.out.println(" ");
+                g.setColor(Color.BLACK);
+                g.setFont(new Font("Times New Roman", Font.ITALIC, 25));
+                if (frei == 0) {
+                    if (blackScore > whiteScore) {
+                        g.drawString("Jugador 1 gano!      Fichas ganadas: " + blackScore, 0, 500);
+                    } else if (blackScore == whiteScore || noOneWin) {
+                        g.drawString("Empate", 250, 500);
+                    } else {
+                        g.drawString("Jugador 2 gano!   Fichas ganadas: " + whiteScore, 0, 500);
+                    }
                 } else {
-                    System.out.println("Ganadas " + tokensWon + " Fichas");
-                    System.out.println(" ");
-                }
-            }
-        }
-        while(cantMove);
-
-        System.out.println("Tabla actualiza");
-        System.out.println(" ");
-
-        displayBoard();
-
-        if(canMove()){
-            player2();
-        }
-        else{
-            gameOver();
-        }
-
-    }
-    public void Player2(){
-        int row, column;
-        boolean cantMove;
-
-        System.out.println("Tu turno jugador " + player2);
-        System.out.println(" ");
-
-        do{
-            Scanner sc = new Scanner(System.in);
-            cantMove = false;
-            System.out.println("Pong el numero de fila en la que quiere mover la ficha: ");
-            row = sc.nextInt();
-            while(row < 0 || row >= size){
-                try {
-                    if(row < 0 || row >= size){
-                        throw new NotValidPosition();
+                    //cambiar a dos para que empieze el negro
+                    if (playerTurn == 2) {
+                        g.drawString("Turno del jugador 1    negras: " + blackScore + "  blancas: " + whiteScore, 0, 500);
+                    } else {
+                        g.drawString("Turno del jugador 2     negras: " + blackScore + "  blancas: " + whiteScore, 0, 500);
                     }
                 }
-                catch (NotValidPosition NTP){
-                    System.out.println(NTP);
-                    System.out.println("Ponge el numero de fila en la que quiere mover la ficha: ");
-                    row = sc.nextInt();
-                }
-            }
-            System.out.println("ponga el numero de la columna en la que quiere mover la ficha: ");
-            column = sc.nextInt();
-            while(column < 0 || column >= size){
-                try {
-                    if(column < 0 || column >= size){
-                        throw new NotValidPosition();
-                    }
-                }
-                catch (NotValidPosition NTP){
-                    System.out.println(NTP);
-                    System.out.println("Ponge el numero de la columna en la que quiere mover la ficha: ");
-                    column = sc.nextInt();
-                }
             }
 
-            if(this.othelloBoard[row][column] != " "){
-                System.out.println(" ");
-                System.out.println("Seleccione una fila o column a vacia para mover una ficha");
-                System.out.println(" ");
-                cantMove = true;
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(481, 505);
             }
-            else {
-                int tokensWon = putToken(row, column, player2);
-                if (tokensWon == 0) {
-                    System.out.println(" ");
-                    System.out.println("Moviemiento invalido");
-                    System.out.println(" ");
 
-                    cantMove = true;
-                } else if (tokensWon == 1) {
-                    System.out.println(" ");
-                    System.out.println("Una ficha ganada");
-                    System.out.println(" ");
-                } else {
-                    System.out.println("Ganadas " + tokensWon + " Fichas");
-                    System.out.println(" ");
-                }
-            }
-        }
-        while(cantMove);
+        };
 
-        System.out.println("Tabla actualiza");
-        System.out.println(" ");
+        frame.add(jpanel);
+        frame.setJMenuBar(menu);
 
-        displayBoard();
+        //te permite interactuar con el programa
+        jpanel.addMouseListener(this);
 
-        if(canMove()){
-            player1();
-        }
-        else{
-            gameOver();
-        }
+        //te permiten visualizar el programa
+        frame.pack();
+        frame.setVisible(true);
     }
-    
+
+    //funcion principal
     public static void main(String[] args) {
+        start();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new OthelloGUI();
+            }
+        });
+    }
 
-        OthelloGame juego1 = new OthelloGame();
+    //es el estado en el que se inicializa el juego
+    static void start() {
+        othelloBoard[(boardSize / 2) - 1][(boardSize / 2) - 1] = 1;
+        othelloBoard[boardSize / 2][boardSize / 2] = 1;
+        othelloBoard[boardSize / 2][(boardSize / 2) - 1] = 2;
+        othelloBoard[(boardSize / 2) - 1][boardSize / 2] = 2;
+        putToken();
+        count();
+    }
 
-        juego1.displayBoard();
-        juego1.Player1();
+    boolean freePosition(int row, int column) {
+        if (row < boardSize && column < boardSize) {
+            if (othelloBoard[row][column] == -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //coloca las fichas
+    static void putToken() {
+        int row = 0, column = 0;
+
+        for (row = 0; row < othelloBoard.length; row++) {
+            for (column = 0; column < boardSize; column++) {
+                if (othelloBoard[row][column] == -1) {
+                    othelloBoard[row][column] = 0;
+                }
+            }
+        }
+
+        for (row = 0; row < othelloBoard.length; row++) {
+            for (column = 0; column < boardSize; column++) {
+                if (othelloBoard[row][column] == playerTurn) {
+                    checkPositon(row, column);
+                }
+            }
+        }
+
+        count();
+
+        if (newPosition == 0 && frei != 0) {
+            noNewPosition++;
+            if (playerTurn == 1) {
+                playerTurn = 2;
+            } else {
+                playerTurn = 1;
+            }
+            if (noNewPosition > 1) {
+                noOneWin = true;
+            }
+            if (!noOneWin) {
+                putToken();
+            }
+        } else {
+            noNewPosition = 0;
+        }
+
+    }
+
+    //revisa si la casilla puede ser seleccionada
+    static void checkPositon(int row, int column) {
+        int notTurn;
+        int row1 = row;
+        int column1 = column;
+        boolean done = false;
+        if (playerTurn == 1) {
+            notTurn = 2;
+        } else {
+            notTurn = 1;
+        }
+
+        while (row >= 0 && row < boardSize && column - 1 >= 0 && column - 1 < boardSize && !done) {
+            if (othelloBoard[row][column - 1] == notTurn) {
+                if (row >= 0 && row < boardSize && column - 2 >= 0 && column - 2 < boardSize) {
+                    if (othelloBoard[row][column - 2] == 0) {
+                        othelloBoard[row][column - 2] = -1;
+                        done = true;
+                    } else if (othelloBoard[row][column - 2] == notTurn) {
+                        column = column - 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        while (row + 1 >= 0 && row + 1 < boardSize && column - 1 >= 0 && column - 1 < boardSize && !done) {
+            if (othelloBoard[row + 1][column - 1] == notTurn) {
+                if (row + 2 >= 0 && row + 2 < boardSize && column - 2 >= 0 && column - 2 < boardSize) {
+                    if (othelloBoard[row + 2][column - 2] == 0) {
+                        othelloBoard[row + 2][column - 2] = -1;
+                        done = true;
+                    } else if (othelloBoard[row + 2][column - 2] == notTurn) {
+                        column = column - 1;
+                        row = row + 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        while (row + 1 >= 0 && row + 1 < boardSize && column >= 0 && column < boardSize && !done) {
+            if (othelloBoard[row + 1][column] == notTurn) {
+                if (row + 2 >= 0 && row + 2 < boardSize && column >= 0 && column < boardSize) {
+                    if (othelloBoard[row + 2][column] == 0) {
+                        othelloBoard[row + 2][column] = -1;
+                        done = true;
+                    } else if (othelloBoard[row + 2][column] == notTurn) {
+                        row = row + 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        while (row + 1 >= 0 && row + 1 < boardSize && column + 1 >= 0 && column + 1 < boardSize && !done) {
+            if (othelloBoard[row + 1][column + 1] == notTurn) {
+                if (row + 2 >= 0 && row + 2 < boardSize && column + 2 >= 0 && column + 2 < boardSize) {
+                    if (othelloBoard[row + 2][column + 2] == 0) {
+                        othelloBoard[row + 2][column + 2] = -1;
+                        done = true;
+                    } else if (othelloBoard[row + 2][column + 2] == notTurn) {
+                        row = row + 1;
+                        column = column + 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        while (row >= 0 && row < boardSize && column + 1 >= 0 && column + 1 < boardSize && !done) {
+            if (othelloBoard[row][column + 1] == notTurn) {
+                if (row >= 0 && row < boardSize && column + 2 >= 0 && column + 2 < boardSize) {
+                    if (othelloBoard[row][column + 2] == 0) {
+                        othelloBoard[row][column + 2] = -1;
+                        done = true;
+                    } else if (othelloBoard[row][column + 2] == notTurn) {
+                        column = column + 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        while (row - 1 >= 0 && row - 1 < boardSize && column + 1 >= 0 && column + 1 < boardSize && !done) {
+            if (othelloBoard[row - 1][column + 1] == notTurn) {
+                if (row - 2 >= 0 && row - 2 < boardSize && column + 2 >= 0 && column + 2 < boardSize) {
+                    if (othelloBoard[row - 2][column + 2] == 0) {
+                        othelloBoard[row - 2][column + 2] = -1;
+                        done = true;
+                    } else if (othelloBoard[row - 2][column + 2] == notTurn) {
+                        row = row - 1;
+                        column = column + 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        while (row - 1 >= 0 && row - 1 < boardSize && column >= 0 && column < boardSize && !done) {
+            if (othelloBoard[row - 1][column] == notTurn) {
+                if (row - 2 >= 0 && row - 2 < boardSize && column >= 0 && column < boardSize) {
+                    if (othelloBoard[row - 2][column] == 0) {
+                        othelloBoard[row - 2][column] = -1;
+                        done = true;
+                    } else if (othelloBoard[row - 2][column] == notTurn) {
+                        row = row - 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        while (row - 1 >= 0 && row - 1 < boardSize && column - 1 >= 0 && column - 1 < boardSize && !done) {
+            if (othelloBoard[row - 1][column - 1] == notTurn) {
+                if (row - 2 >= 0 && row - 2 < boardSize && column - 2 >= 0 && column - 2 < boardSize) {
+                    if (othelloBoard[row - 2][column - 2] == 0) {
+                        othelloBoard[row - 2][column - 2] = -1;
+                        done = true;
+                    } else if (othelloBoard[row - 2][column - 2] == notTurn) {
+                        row = row - 1;
+                        column = column - 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+    }
+
+    //voltea el valor de las fichas
+    static void flipTokens(int row, int column) {
+        int notTurn;
+        int row1 = row;
+        int column1 = column;
+        boolean done = false;
+        if (playerTurn == 1) {
+            notTurn = 2;
+        } else {
+            notTurn = 1;
+        }
+
+        //abajo
+        while (row >= 0 && row < boardSize && column - 1 >= 0 && column - 1 < boardSize && !done) {
+            if (othelloBoard[row][column - 1] == notTurn) {
+                if (row >= 0 && row < boardSize && column - 2 >= 0 && column - 2 < boardSize) {
+                    if (othelloBoard[row][column - 2] == playerTurn) {
+                        for (int k = column - 1; k <= column1; k++) {
+                            othelloBoard[row][k] = playerTurn;
+                            System.out.println("abajo" + row + " " + k);
+                        }
+                        done = true;
+                    } else if (othelloBoard[row][column - 2] == notTurn) {
+                        column = column - 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        //arriba
+        while (row >= 0 && row < boardSize && column + 1 >= 0 && column + 1 < boardSize && !done) {
+            if (othelloBoard[row][column + 1] == notTurn) {
+                if (row >= 0 && row < boardSize && column + 2 >= 0 && column + 2 < boardSize) {
+                    if (othelloBoard[row][column + 2] == playerTurn) {
+                        for (int k = column + 1; k > column1; k--) {
+                            othelloBoard[row][k] = playerTurn;
+                            System.out.println("arriba" + row + " " + k);
+                        }
+                        done = true;
+                    } else if (othelloBoard[row][column + 2] == notTurn) {
+                        column = column + 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        //izquierda
+        while (row + 1 >= 0 && row + 1 < boardSize && column >= 0 && column < boardSize && !done) {
+            if (othelloBoard[row + 1][column] == notTurn) {
+                if (row + 2 >= 0 && row + 2 < boardSize && column >= 0 && column < boardSize) {
+                    if (othelloBoard[row + 2][column] == playerTurn) {
+                        for (int k = row + 1; k > row1; k--) {
+                            othelloBoard[k][column] = playerTurn;
+                            System.out.println("izquierda" + k + " " + column);
+                        }
+                        done = true;
+                    } else if (othelloBoard[row + 2][column] == notTurn) {
+                        row = row + 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        //derecha
+        while (row - 1 >= 0 && row - 1 < boardSize && column >= 0 && column < boardSize && !done) {
+            if (othelloBoard[row - 1][column] == notTurn) {
+                if (row - 2 >= 0 && row - 2 < boardSize && column >= 0 && column < boardSize) {
+                    if (othelloBoard[row - 2][column] == playerTurn) {
+                        for (int k = row - 2; k < row1; k++) {
+                            othelloBoard[k][column] = playerTurn;
+                            System.out.println("derecha" + k + " " + column);
+                        }
+                        done = true;
+                    } else if (othelloBoard[row - 2][column] == notTurn) {
+                        row = row - 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        //diagonal de arriba a la derecha
+        while (row - 1 >= 0 && row - 1 < boardSize && column + 1 >= 0 && column + 1 < boardSize && !done) {
+            if (othelloBoard[row - 1][column + 1] == notTurn) {
+                if (row - 2 >= 0 && row - 2 < boardSize && column + 2 >= 0 && column + 2 < boardSize) {
+                    if (othelloBoard[row - 2][column + 2] == playerTurn) {
+                        int m = row - 1;
+                        for (int k = column + 1; k > column1; k--) {
+                            System.out.println("arriba a la derecha" + m + " " + k);
+                            othelloBoard[m][k] = playerTurn;
+                            m++;
+                        }
+                        done = true;
+                    } else if (othelloBoard[row - 2][column + 2] == notTurn) {
+                        column = column + 1;
+                        row = row - 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        //diagonal de arriba a la izquierda
+        while (row + 1 >= 0 && row + 1 < boardSize && column + 1 >= 0 && column + 1 < boardSize && !done) {
+            if (othelloBoard[row + 1][column + 1] == notTurn) {
+                if (row + 2 >= 0 && row + 2 < boardSize && column + 2 >= 0 && column + 2 < boardSize) {
+                    if (othelloBoard[row + 2][column + 2] == playerTurn) {
+                        int m = row + 1;
+                        for (int k = column + 1; k > column1; k--) {
+                            System.out.println("arriba a la izquierda" + m + " " + k);
+                            othelloBoard[m][k] = playerTurn;
+                            m--;
+                        }
+                        done = true;
+                    } else if (othelloBoard[row + 2][column + 2] == notTurn) {
+                        row = row + 1;
+                        column = column + 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        //diagonal abajo a la izquierda
+        while (row + 1 >= 0 && row + 1 < boardSize && column - 1 >= 0 && column - 1 < boardSize && !done) {
+            if (othelloBoard[row + 1][column - 1] == notTurn) {
+                if (row + 2 >= 0 && row + 2 < boardSize && column - 2 >= 0 && column - 2 < boardSize) {
+                    if (othelloBoard[row + 2][column - 2] == playerTurn) {
+                        int m = row + 1;
+                        for (int k = column - 1; k < column1; k++) {
+                            System.out.println("abajo a la izquierda" + m + " " + k);
+                            othelloBoard[m][k] = playerTurn;
+                            m--;
+                        }
+                        done = true;
+                    } else if (othelloBoard[row + 2][column - 2] == notTurn) {
+                        column = column - 1;
+                        row = row + 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+
+        //diagonal de abajo a la derecha
+        while (row - 1 >= 0 && row - 1 < boardSize && column - 1 >= 0 && column - 1 < boardSize && !done) {
+            if (othelloBoard[row - 1][column - 1] == notTurn) {
+                if (row - 2 >= 0 && row - 2 < boardSize && column - 2 >= 0 && column - 2 < boardSize) {
+                    if (othelloBoard[row - 2][column - 2] == playerTurn) {
+                        int m = row - 1;
+                        for (int k = column - 1; k < column1; k++) {
+                            System.out.println("abajo derecha" + m + " " + k);
+                            othelloBoard[m][k] = playerTurn;
+                            m++;
+                        }
+                        done = true;
+                    } else if (othelloBoard[row - 2][column - 2] == notTurn) {
+                        row = row - 1;
+                        column = column - 1;
+                    } else {
+                        done = true;
+                    }
+                } else {
+                    done = true;
+                }
+            } else {
+                done = true;
+            }
+        }
+        row = row1;
+        column = column1;
+        done = false;
+    }
+
+    //contador del marcador de cada jugador
+    static void count() {
+        int row = 0, column = 0;
+        blackScore = 0;
+        whiteScore = 0;
+        frei = 0;
+        newPosition = 0;
+        for (row = 0; row < othelloBoard.length; row++) {
+            for (column = 0; column < boardSize; column++) {
+                if (othelloBoard[row][column] == 2) {
+                    blackScore++;
+                }
+                if (othelloBoard[row][column] == 1) {
+                    whiteScore++;
+                }
+                if (othelloBoard[row][column] == 0) {
+                    frei++;
+                }
+                if (othelloBoard[row][column] == -1) {
+                    newPosition++;
+                }
+            }
+        }
+
+    }
+
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int x, y;
+        int row = 0, column = 0;
+        x = e.getX();
+        y = e.getY();
+        row = x / 60;
+        column = y / 60;
+        if (freePosition(row, column)) {
+            if (playerTurn == 1) {
+                othelloBoard[row][column] = playerTurn;
+                flipTokens(row, column);
+                playerTurn = 2;
+            } else {
+                othelloBoard[row][column] = playerTurn;
+                flipTokens(row, column);
+                playerTurn = 1;
+            }
+            putToken();
+
+            jpanel.repaint();
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+
     }
 }
